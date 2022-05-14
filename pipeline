@@ -1,0 +1,56 @@
+pipeline {
+    agent {
+        node { 
+            label 'node01'
+        } 
+      }
+    options { 
+        timestamps ()
+    }
+    environment {
+        currentDate = sh(returnStdout: true, script: 'date +%Y-%m-%d').trim()
+    }
+    tools {
+        maven 'maven-apache-3.8.4'
+    }
+    stages {
+        stage('Build') {
+            steps {
+                script{
+                    try{
+                        writeFile(file: env.currentDate+'.txt', text: env.currentDate)
+                        sh "ls -l"
+                    }catch (Exception e) {
+                      echo 'Exception occurred: ' + e.toString()
+                      sh 'Handle the exception!'
+                    }
+                }
+            }
+        }
+        stage('Deliver') {
+            steps {
+                archiveArtifacts artifacts: env.currentDate+'.txt', fingerprint:true 
+            }
+        }
+        stage('validate') {
+            steps {
+                timeout(30) {
+                    script {
+                        input(message: 'Please validate, this job will automatically ABORTED after 30 minutes even if no user input provided', ok: 'Proceed')
+                    }
+                }
+            }
+        }
+        stage('deploy') {
+            steps {
+                sh 'java --version'
+            }
+        }
+        
+    }
+    post { 
+        always { 
+            cleanWs()
+        }
+    }
+}
