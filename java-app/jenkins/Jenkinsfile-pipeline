@@ -23,6 +23,22 @@ pipeline {
         sh 'java -jar $MVN_WORKDIR/target/my-app-1.0-SNAPSHOT.jar'
       }
     }
+    stage('Maven Install') {
+      agent {
+        docker {
+          image 'maven:3.5.0'
+        }
+      }
+      steps {
+        sh 'mvn clean install'
+      }
+    }
+    stage('Docker Build') {
+      agent any
+      steps {
+        sh 'docker build -t java-app-test:latest .'
+      }
+    }
   }
   post {
     always {
