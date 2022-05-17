@@ -1,8 +1,11 @@
 pipeline {
   agent {
-     node { 
-        label 'node01'
-     } 
+    //  node { 
+    //     label 'node01'
+    //  } 
+    docker {
+            image 'maven:3.6.1-alpine'
+        }
   }
   tools {
     maven 'maven-apache-3.8.4'
@@ -23,35 +26,6 @@ pipeline {
         sh 'java -jar $MVN_WORKDIR/target/my-app-1.0-SNAPSHOT.jar'
       }
     }
-  stage('Maven build') {
-            agent {
-                docker {
-                    /*
-                     * Reuse the workspace on the agent defined at top-level of
-                     * Pipeline but run inside a container.
-                     */
-                    image 'maven:3.6-jdk-8'
-                    reuseNode true
-                }
-            }
-            steps {        
-                sh 'clean install'
-            }
-            post {
-                success {
-                /* 
-                 * Only worry about archiving the jar file 
-                 * if the build steps are successful (this part may be not necessary)
-                 */
-                archiveArtifacts(artifacts: '**/target/*.jar', allowEmptyArchive: true)
-                }
-           }
-        }
-        stage('Build docker image') {
-             steps {
-                sh 'docker build -t ${IMAGE} . '
-            }
-        }
   }
   post {
     always {
