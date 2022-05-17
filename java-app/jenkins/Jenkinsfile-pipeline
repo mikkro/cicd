@@ -1,8 +1,9 @@
 pipeline {
   agent {
-     node { 
-        label 'node01'
+     docker { 
         image 'maven:3.6.1-alpine'
+        args '-v /root/.m2:/root/.m2' //caching
+        label 'node01'
      } 
   }
   tools {
