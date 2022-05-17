@@ -23,7 +23,6 @@ pipeline {
         sh 'java -jar $MVN_WORKDIR/target/my-app-1.0-SNAPSHOT.jar'
       }
     }
-  }
   stage('Maven build') {
             agent {
                 docker {
@@ -53,6 +52,7 @@ pipeline {
                 sh 'docker build -t ${IMAGE} . '
             }
         }
+  }
   post {
     always {
       dir('java-app'){
