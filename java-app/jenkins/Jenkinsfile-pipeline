@@ -1,37 +1,40 @@
 pipeline {
-  agent {
-     docker { 
-        image 'maven:3.6.1-alpine'
-        args '-v /root/.m2:/root/.m2' //caching
-        label 'node01'
-     } 
-  }
-  tools {
-    maven 'maven-apache-3.8.4'
-  }
-  environment {
-      MVN_WORKDIR = 'java-app'
-  }
-  stages {
-    stage('Maven Package') {
-      steps {
-        dir('java-app'){
-          sh 'mvn package'
+    agent {
+        docker {
+            image 'maven:3.6.1-alpine'
+            args '-v /root/.m2:/root/.m2' //caching
+            label 'node01'
         }
-      }
     }
-    stage('Run') {
-      steps {
-        sh 'java -jar $MVN_WORKDIR/target/my-app-1.0-SNAPSHOT.jar'
-      }
+    environment { 
+        HOME = "${WORKSPACE}/java-app"
     }
-  }
-  post {
-    always {
-      dir('java-app'){
-        step($class: 'JUnitResultArchiver', checksName: '', testResults: '**/surefire-reports/TEST-*.xml')
-        step(followSymlinks: false, $class: 'ArtifactArchiver', artifacts: 'target/*.jar')
-      }
+    stages {
+        stage('Build') {
+            steps {
+                sh 'cd $HOME && mvn -B -DskipTests clean package'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'cd $HOME && mvn test'
+            }
+            post {
+                always {
+                    junit '**/surefire-reports/TEST-*.xml'
+                }
+            }
+        }
+        stage('Deliver') {
+            steps {
+                archiveArtifacts artifacts: '**/*.jar'
+            }
+        }
+        stage('Run') {
+            steps {
+                sh 'cd $HOME && java -jar target/my-app-1.0-SNAPSHOT.jar'
+            }
+        }
     }
-  }
+
 }
