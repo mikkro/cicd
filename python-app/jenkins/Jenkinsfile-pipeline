@@ -1,25 +1,20 @@
 pipeline {
     agent {
         docker {
-            image 'python:3.10.1-alpine' 
-            args '-v /root/.m2:/root/.m2' //caching
+            image 'python:3.9-alpine'
             label 'node01'
         }
     }
-    environment { 
-        HOME = "${WORKSPACE}/python-app"
-    }
     stages {
-        stage('version') {
-            steps {
-                sh 'python --version'
+        stage('Run') {
+            environment { 
+                HOME = "${WORKSPACE}/python-app"
             }
-        }
-
-        stage('build') {
             steps {
-                sh 'pip install -r python-app/requirements.txt'
-                sh 'python3 -m flask run --host=0.0.0.0 &'
+                dir('python-app/'){
+                    sh 'pip install -r requirements.txt'
+                    sh 'python3 -m flask run --host=0.0.0.0 &'
+                }
             }
         }
         stage('Test') {
@@ -31,6 +26,4 @@ pipeline {
             }
         }
     }
-
 }
-
