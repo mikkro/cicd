@@ -48,6 +48,9 @@ pipeline {
                     sh 'docker push $REGISTRY_NAME:$BUILD_NUMBER'
                 }  
             }
+            always {
+			    sh 'docker logout'
+		    }
         }
         stage('Deploy to DEV'){
             agent {
@@ -82,8 +85,5 @@ pipeline {
             emailext(body: '${DEFAULT_CONTENT}', mimeType: 'text/html',
                 subject: '${DEFAULT_SUBJECT}', to: 'mikolajkrol93@gmail.pl')
         }
-		always {
-			sh 'docker logout'
-		}
 	}
 }
