@@ -19,10 +19,8 @@ pipeline {
         }
         stage('Test') {
             steps {
-                retry(5) {
-                    //sleep time: 1, unit: 'SECONDS'
+                    sleep time: 1, unit: 'SECONDS'
                     sh 'wget -O- $(hostname):5000'
-                }
             }
         }
     }
