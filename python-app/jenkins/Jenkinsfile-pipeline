@@ -22,6 +22,14 @@ pipeline {
                 sh 'python3 -m flask run --host=0.0.0.0 &'
             }
         }
+        stage('Test') {
+            steps {
+                retry(5) {
+                    //sleep time: 1, unit: 'SECONDS'
+                    sh 'wget -O- $(hostname):5000'
+                }
+            }
+        }
     }
 
 }
