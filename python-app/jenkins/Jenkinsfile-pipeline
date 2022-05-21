@@ -18,39 +18,14 @@ pipeline {
 
         stage('build') {
             steps {
-                sh 'pip install -r requirements.txt'
+                sh 'pip install -r python-app/requirements.txt'
             }
         }
         stage('test') {
             steps {
-                sh 'python test.py'
+                sh 'python python-app/test.py'
             }   
         }
-        // stage('Build') {
-        //     steps {
-        //         sh 'cd $HOME && mvn -B -DskipTests clean package'
-        //     }
-        // }
-        // stage('Test') {
-        //     steps {
-        //         sh 'cd $HOME && mvn test'
-        //     }
-        //     post {
-        //         always {
-        //             junit '**/surefire-reports/TEST-*.xml'
-        //         }
-        //     }
-        // }
-        // stage('Deliver') {
-        //     steps {
-        //         archiveArtifacts artifacts: '**/*.jar'
-        //     }
-        // }
-        // stage('Run') {
-        //     steps {
-        //         sh 'cd $HOME && java -jar target/my-app-1.0-SNAPSHOT.jar'
-        //     }
-        // }
     }
 
 }
