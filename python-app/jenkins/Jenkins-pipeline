@@ -1,0 +1,40 @@
+pipeline {
+    agent {
+        node { 
+            label 'node01'
+        } 
+    }
+    environment {
+		DOCKERHUB_CREDENTIALS=credentials('dockerhub')
+	}
+    stages {
+        stage('Build') {
+            steps {
+                dir('python-app') {
+                    sh 'docker build -t python-app:$BUILD_NUMBER .'
+                    sh 'docker save python-app:$BUILD_NUMBER > python-app.image'
+                }
+                
+            }
+        }
+        stage('Login') {
+
+			steps {
+				sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+			}
+		}
+        stage('Push') {
+			steps {
+				sh 'docker push python-app.image'
+			}
+		}
+    }
+    post {
+        success {
+            archiveArtifacts 'python-app/python-app.image'
+        }
+        cleanup {
+            cleanWs() // lub git clean -fdx
+        }
+    }
+}
