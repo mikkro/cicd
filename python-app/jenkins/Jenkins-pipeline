@@ -1,8 +1,9 @@
 pipeline {
     agent {
-        node { 
+        docker {
+            image 'python:3.9-alpine'
             label 'node01'
-        } 
+        }
     }
     environment {
 		DOCKERHUB_CREDENTIALS=credentials('dockerhub')
