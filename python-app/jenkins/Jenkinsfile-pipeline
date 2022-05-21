@@ -19,12 +19,8 @@ pipeline {
         stage('build') {
             steps {
                 sh 'pip install -r python-app/requirements.txt'
+                sh 'python3 -m flask run --host=0.0.0.0 &'
             }
-        }
-        stage('test') {
-            steps {
-                sh 'python app.py'
-            }   
         }
     }
 
