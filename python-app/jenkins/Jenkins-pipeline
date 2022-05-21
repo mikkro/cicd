@@ -28,11 +28,5 @@ pipeline {
         always{
             sh 'docker logout'
         }
-        success {
-            archiveArtifacts 'python-app/python-app:$BUILD_NUMBER'
-        }
-        cleanup {
-            cleanWs() // lub git clean -fdx
-        }
     }
 }
