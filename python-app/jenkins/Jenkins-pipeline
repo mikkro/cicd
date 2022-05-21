@@ -10,7 +10,7 @@ pipeline {
 	}
 
     stages {
-        stage('Run') {
+        stage('Test') {
             environment { 
                 HOME = "${WORKSPACE}/python-app"
             }
