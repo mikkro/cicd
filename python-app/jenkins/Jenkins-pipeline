@@ -64,15 +64,15 @@ pipeline {
             }
         }
         stage('Deploy to PRODUCTION'){
-            when {
-                branch 'master'
-            }
+            // when {
+            //     branch 'master'
+            // }
             agent {
                 label 'node01'
             }
             steps {
                 sh 'docker rm -f PROD-python-app 2> /dev/null || true'
-                sh 'docker run --name dev-python-app -d -p 80:5000 $REGISTRY_NAME:$BUILD_NUMBER'
+                sh 'docker run --name PROD-python-app -d -p 80:5000 $REGISTRY_NAME:$BUILD_NUMBER'
             }
         }
     }
