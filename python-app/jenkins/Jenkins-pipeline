@@ -1,0 +1,56 @@
+pipeline {
+    agent {
+        node { 
+            label 'node01'
+        } 
+    }
+    environment {
+		DOCKERHUB_CREDENTIALS=credentials('dockerhub')
+        REGISTRY_NAME='mikolajkrol/python-app'
+	}
+
+    stages {
+        stage('Run') {
+            agent{
+                docker {
+                    image 'python:3.9-alpine'
+                }
+            }
+            environment { 
+                HOME = "${WORKSPACE}/python-app"
+            }
+            steps {
+                dir('python-app/'){
+                    sh 'pip install -r requirements.txt'
+                    sh '$HOME/.local/bin/pytest . --junit-xml=pytest_junit.xml'
+                    sh 'python3 -m flask run --host=0.0.0.0 &'
+                }
+            }
+            post {
+                always {
+                    junit testResults: '**/*pytest_junit.xml'
+                }
+            }
+        }
+        stage('Build') {
+            steps {
+                dir('python-app') {
+                    sh 'docker build -t $REGISTRY_NAME:$BUILD_NUMBER .'
+                } 
+            }
+        }
+        stage('Push') {
+            steps {
+                dir('python-app') {
+                    sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                    sh 'docker push $REGISTRY_NAME:$BUILD_NUMBER'
+                }  
+            }
+        }
+    }
+	post {
+		always {
+			sh 'docker logout'
+		}
+	}
+}
