@@ -13,7 +13,13 @@ pipeline {
             steps {
                 dir('python-app/'){
                     sh 'pip install -r requirements.txt'
+                    sh '$HOME/.local/bin/pytest . --junit-xml=pytest_junit.xml'
                     sh 'python3 -m flask run --host=0.0.0.0 &'
+                }
+            }
+            post {
+                always {
+                    junit testResults: '**/*pytest_junit.xml'
                 }
             }
         }
