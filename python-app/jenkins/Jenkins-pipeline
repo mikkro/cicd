@@ -25,13 +25,13 @@ pipeline {
 		}
         stage('Push') {
 			steps {
-				sh 'docker push python-app.image'
+				sh 'docker push python-app:$BUILD_NUMBER'
 			}
 		}
     }
     post {
         success {
-            archiveArtifacts 'python-app/python-app.image'
+            archiveArtifacts 'python-app/python-app:$BUILD_NUMBER'
         }
         cleanup {
             cleanWs() // lub git clean -fdx
