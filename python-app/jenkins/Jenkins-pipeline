@@ -12,7 +12,7 @@ pipeline {
         stage('Build') {
             steps {
                 dir('python-app') {
-                    sh 'docker build -t python-app:$BUILD_NUMBER .'
+                    sh 'docker build -t $REGISTRY_NAME:$BUILD_NUMBER .'
                     sh 'docker save python-app:$BUILD_NUMBER > python-app.image'
                 }
                 
