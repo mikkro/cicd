@@ -39,7 +39,7 @@ pipeline {
             }
         }
         stage('Push') {
-             agent {
+            agent {
                     label 'node01'
             }
             steps {
@@ -48,9 +48,6 @@ pipeline {
                     sh 'docker push $REGISTRY_NAME:$BUILD_NUMBER'
                 }  
             }
-            always {
-			    sh 'docker logout'
-		    }
         }
         stage('Deploy to DEV'){
             agent {
