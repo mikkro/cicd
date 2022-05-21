@@ -23,7 +23,7 @@ pipeline {
         }
         stage('test') {
             steps {
-                sh 'python python-app/test.py'
+                sh 'python test.py'
             }   
         }
     }
